@@ -1,0 +1,89 @@
+name: Notifications
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline", "Deploy Pipeline"]
+    types:
+      - completed
+
+jobs:
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    
+    steps:
+    - name: Create Success Issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `✅ Pipeline Exitoso - ${context.payload.workflow_run.name}`;
+          const body = `
+          ## ✅ Pipeline Completado Exitosamente
+          
+          **Workflow:** ${context.payload.workflow_run.name}
+          **Commit:** ${context.payload.workflow_run.head_sha}
+          **Rama:** ${context.payload.workflow_run.head_branch}
+          **Fecha:** ${new Date().toISOString()}
+          **URL:** ${context.payload.workflow_run.html_url}
+          
+          ### ℹ️ Detalles
+          - ✅ Todos los tests pasaron
+          - ✅ Build completado sin errores
+          - ✅ Deployment exitoso
+          
+          ---
+          *Esta issue fue creada automáticamente por GitHub Actions*
+          `;
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['automated', 'success', 'pipeline']
+          });
+
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    
+    steps:
+    - name: Create Failure Issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `❌ Pipeline Fallido - ${context.payload.workflow_run.name}`;
+          const body = `
+          ## ❌ Pipeline Falló
+          
+          **Workflow:** ${context.payload.workflow_run.name}
+          **Commit:** ${context.payload.workflow_run.head_sha}
+          **Rama:** ${context.payload.workflow_run.head_branch}
+          **Fecha:** ${new Date().toISOString()}
+          **URL:** ${context.payload.workflow_run.html_url}
+          
+          ### 🔍 Acciones Requeridas
+          1. Revisar los logs del pipeline fallido
+          2. Verificar que todos los tests pasen localmente
+          3. Corregir los errores encontrados
+          4. Hacer push con las correcciones
+          
+          ### 📋 Checklist de Debugging
+          - [ ] Tests unitarios pasan
+          - [ ] Tests de integración pasan
+          - [ ] No hay vulnerabilidades de seguridad
+          - [ ] Build se completa sin errores
+          
+          ---
+          *Esta issue fue creada automáticamente por GitHub Actions*
+          `;
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['automated', 'bug', 'pipeline-failure', 'urgent']
+          });
