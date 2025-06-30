@@ -16,8 +16,8 @@ describe('Calculator Unit Tests', () => {
     });
 
     test('debe lanzar error con parámetros no numéricos', () => {
-      expect(() => Calculator.add('a', 2)).toThrow('Los parámetros deben ser números');
-      expect(() => Calculator.add(2, null)).toThrow('Los parámetros deben ser números');
+      expect(() => Calculator.add('a', 2)).toThrow('Los parámetros deben ser números válidos y finitos.');
+      expect(() => Calculator.add(2, null)).toThrow('Los parámetros deben ser números válidos y finitos.');
     });
   });
 

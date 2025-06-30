@@ -1,29 +1,34 @@
 class Calculator {
-  static add(a, b) {
-    if (typeof a !== 'number' || typeof b !== 'number') {
-      throw new Error('Los parámetros deben ser números');
+  /**
+   * Valida que los parámetros sean números finitos.
+   * @param  {...any} params - Los parámetros a validar.
+   * @private
+   */
+  static _validateNumbers(...params) {
+    for (const param of params) {
+      if (typeof param !== 'number' || !Number.isFinite(param)) {
+        throw new Error('Los parámetros deben ser números válidos y finitos.');
+      }
     }
+  }
+
+  static add(a, b) {
+    Calculator._validateNumbers(a, b);
     return a + b;
   }
 
   static subtract(a, b) {
-    if (typeof a !== 'number' || typeof b !== 'number') {
-      throw new Error('Los parámetros deben ser números');
-    }
+    Calculator._validateNumbers(a, b);
     return a - b;
   }
 
   static multiply(a, b) {
-    if (typeof a !== 'number' || typeof b !== 'number') {
-      throw new Error('Los parámetros deben ser números');
-    }
+    Calculator._validateNumbers(a, b);
     return a * b;
   }
 
   static divide(a, b) {
-    if (typeof a !== 'number' || typeof b !== 'number') {
-      throw new Error('Los parámetros deben ser números');
-    }
+    Calculator._validateNumbers(a, b);
     if (b === 0) {
       throw new Error('No se puede dividir entre cero');
     }
@@ -31,9 +36,7 @@ class Calculator {
   }
 
   static power(base, exponent) {
-    if (typeof base !== 'number' || typeof exponent !== 'number') {
-      throw new Error('Los parámetros deben ser números');
-    }
+    Calculator._validateNumbers(base, exponent);
     return Math.pow(base, exponent);
   }
 }
